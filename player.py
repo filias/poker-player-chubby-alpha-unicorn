@@ -12,7 +12,7 @@ class Player:
         if game_state["bet_index"] > 2 and game_state["pot"] < 2:
             return game_state["current_buy_in"] + 1
 
-        #check_cards()
+        # check_cards()
 
         #bet()
 
