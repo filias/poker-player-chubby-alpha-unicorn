@@ -74,17 +74,18 @@ class Player:
 
         # When the fold cards are there we use the rainman api
         if self.game_state["community_cards"]:
-            api_url = "https://rainman.leanpoker.org/rank"
-
-            cards = [
-                        {"rank": self.first_card["rank"], "suit": self.first_card["suit"]},
-                        {"rank": self.second_card["rank"], "suit": self.second_card["suit"]},
-                    ] + self.game_state["community_cards"]
-
-            response = requests.get(api_url, json={"cards": cards})
-
-            if response.json()["rank"] >= 1:
-                return self.raise_aggressive_bet
+            # api_url = "https://rainman.leanpoker.org/rank"
+            #
+            # cards = [
+            #             {"rank": self.first_card["rank"], "suit": self.first_card["suit"]},
+            #             {"rank": self.second_card["rank"], "suit": self.second_card["suit"]},
+            #         ] + self.game_state["community_cards"]
+            #
+            # response = requests.get(api_url, json={"cards": cards})
+            #
+            # if response.json()["rank"] >= 1:
+            #     return self.raise_aggressive_bet
+            print("***** community cards: ", self.game_state["community_cards"])
 
             return self.fold_bet
 
