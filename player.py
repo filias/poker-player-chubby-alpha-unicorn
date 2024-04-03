@@ -67,13 +67,25 @@ class Player:
     @property
     def fold_bet(self):
         return 0
-    
+
+    @property
+    def pot_at_big_blind(self):
+        return self.game_state["current_buy_in"] == 2 * self.game_state["small_blind"]
+
+    @propoerty
+    def at_blind(self):
+        return self.game_state["dealer"] in (2, 3)
+
+    @property
+    def post_flop(self):
+        return self.game_state["community_cards"]
+
     def betRequest(self, game_state):
         # self.game_state should be immutable - don't change it
         self.game_state = game_state
 
-        # When the fold cards are there we use the rainman api
-        if self.game_state["community_cards"]:
+        # post flop
+        if self.post_flop:
             # api_url = "https://rainman.leanpoker.org/rank"
             #
             # cards = [
@@ -89,9 +101,15 @@ class Player:
 
             return self.fold_bet
 
-        else:  # We only have our 2 cards
+        # pre flop
+        else:
+
             if self.check_cards():
                 return self.raise_aggressive_bet
+
+            if self.at_blind and self.pot_at_big_blind:
+                self.call_bet
+            
             return self.fold_bet
 
 
