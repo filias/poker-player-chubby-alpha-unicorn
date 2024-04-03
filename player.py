@@ -36,7 +36,7 @@ class Player:
             ("Q", "Q"),
             ("J", "J"),
         ]
-        return self.first_card["rank"], self.second_card["rank"]) in very_good_hands
+        return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
     @property
     def other_players_count(self):
