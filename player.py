@@ -72,7 +72,7 @@ class Player:
     def pot_at_big_blind(self):
         return self.game_state["current_buy_in"] == 2 * self.game_state["small_blind"]
 
-    @propoerty
+    @property
     def at_blind(self):
         return self.game_state["dealer"] in (2, 3)
 
