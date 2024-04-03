@@ -123,6 +123,9 @@ class Player:
         # self.game_state should be immutable - don't change it
         self.game_state = game_state
 
+        # Print player names
+        print(f"Players: {[player['name'] for player in self.game_state['players']]}")
+
         # post flop
         if self.post_flop:
             if self.check_cards_post_flop():
