@@ -2,8 +2,28 @@
 class Player:
     VERSION = "Chubby Alpha Unicorn"
 
+    @property
+    def our_cards(self):
+        return self.game_state["players"][self.game_state["in_action"]]["hole_cards"]
+
+    @property
+    def first_card(self):
+        return self.our_cards[0]
+
+    @property
+    def second_card(self):
+        return self.our_cards[1]
+
     def check_cards(self) -> bool:
-        ...
+        # Check if we have a pair
+        if self.our_cards[0]["rank"] == self.our_cards[1]["rank"]:
+            return True
+
+        # Check if we have a high card
+        if self.first_card["rank"] in ["A", "K", "Q", "J", "10"] or self.second_card["rank"] in ["A", "K", "Q", "J", "10"]:
+            return True
+
+        return False
 
     def get_other_active_players(self):
         return [
