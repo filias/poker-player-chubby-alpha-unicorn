@@ -3,8 +3,12 @@ class Player:
     VERSION = "Chubby Alpha Unicorn"
 
     @property
+    def our_player_id(self):
+        return self.game_state["in_action"]
+
+    @property
     def our_player(self):
-        return self.game_state["players"][self.game_state["in_action"]]
+        return self.game_state["players"][self.our_player_id]
 
     @property
     def our_cards(self):
@@ -24,20 +28,25 @@ class Player:
             return True
 
         # Check if we have a high card
-        if self.first_card["rank"] in ["A", "K", "Q", "J", "10"] or self.second_card["rank"] in ["A", "K", "Q", "J", "10"]:
+        if self.first_card["rank"] in ["A", "K", "Q", "J", "10"] and self.second_card["rank"] in ["A", "K", "Q", "J", "10"]:
+            return True
+
+        # Check if the cards are the same suit
+        if self.first_card["suit"] == self.second_card["suit"]:
             return True
 
         return False
 
-    def get_other_active_players(self):
-        return [
+    @property
+    def other_players_count(self):
+        return len([
             # loop through all players
             player for player in self.game_state["players"]
             # take active players
             if player["status"] == "active"
             # don't take our own player
-            and player["id"] != self.game_state["in_action"]
-        ]
+            and player["id"] != self.our_player_id
+        ])
 
     @property
     def call_bet(self):
@@ -56,16 +65,16 @@ class Player:
         self.game_state = game_state
 
         # If there are other playing in the game we call
-        other_players = self.get_other_active_players()
-        if len(other_players) > 0:
-            return self.call_bet
+        if self.other_players_count > 0:
+            # If the cards are good we raise
+            if self.check_cards():
+                return self.raise_bet
 
-        # If the cards are good we raise
-        if self.check_cards():
-            return self.raise_bet
+            # Otherwise we fold. We dont have good cards
+            return self.fold_bet
 
-        # Otherwise we fold
-        return self.fold_bet
+        # Otherwise we call as there are no other players
+        return self.call_bet
 
 
     def showdown(self, game_state):
