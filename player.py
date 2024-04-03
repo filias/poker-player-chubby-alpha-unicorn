@@ -41,7 +41,7 @@ class Player:
 
     @property
     def call_bet(self):
-        return self.game_state["current_buy_in"] - self.our_player["bet"]
+        return max(self.game_state["current_buy_in"] - self.our_player["bet"], 0)
 
     @property
     def raise_bet(self):
