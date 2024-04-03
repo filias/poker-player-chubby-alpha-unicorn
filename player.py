@@ -47,6 +47,10 @@ class Player:
     def raise_bet(self):
         return self.call_bet + 1
 
+    @property
+    def fold_bet(self):
+        return 0
+    
     def betRequest(self, game_state):
         # self.game_state should be immutable - don't change it
         self.game_state = game_state
@@ -60,8 +64,8 @@ class Player:
         if self.check_cards():
             return self.raise_bet
 
-        # Otherwise we call
-        return self.call_bet
+        # Otherwise we fold
+        return self.fold_bet
 
 
     def showdown(self, game_state):
