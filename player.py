@@ -69,14 +69,26 @@ class Player:
         # self.game_state should be immutable - don't change it
         self.game_state = game_state
 
-        # If there are other playing in the game we call
-        if self.other_players_count > 0:
+        # When the fold cards are there we use the rainman api
+        if self.game_state["community_cards"]:
+            api_url = "https://rainman.leanpoker.org/rank"
+
+            cards = [
+                        {"rank": self.first_card["rank"], "suit": self.first_card["suit"]},
+                        {"rank": self.second_card["rank"], "suit": self.second_card["suit"]},
+                    ] + self.game_state["community_cards"]
+
+            response = requests.get(api_url, json={"cards": cards})
+
+            if response.json()["rank"] >= 1:
+                return self.raise_aggressive_bet
+
+            return self.fold_bet
+
+        else:  # We only have our 2 cards
             if self.check_cards():
                 return self.raise_aggressive_bet
             return self.fold_bet
-
-        # Otherwise we call as there are no other players
-        return self.call_bet
 
 
     def showdown(self, game_state):
