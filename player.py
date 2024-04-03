@@ -42,6 +42,15 @@ class Player:
         ]
         return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
+    def check_cards_post_flop(self) -> bool:
+        very_good_hands = [
+            ("A", "A"),
+            ("K", "K"),
+            ("Q", "Q"),
+            ("J", "J"),
+        ]
+        return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
+
     @property
     def other_players_count(self):
         return len([
@@ -104,11 +113,7 @@ class Player:
 
         # post flop
         if self.post_flop:
-            result = self.call_rainman()
-
-            print("*********Rainman result:", result)
-
-            if result >= 1:
+            if self.check_cards_post_flop():
                 return self.raise_aggressive_bet
 
             return self.fold_bet
@@ -119,9 +124,6 @@ class Player:
             if self.check_cards_pre_flop():
                 return self.raise_aggressive_bet
 
-            if self.at_blind and self.pot_at_big_blind:
-                self.call_bet
-            
             return self.fold_bet
 
 
