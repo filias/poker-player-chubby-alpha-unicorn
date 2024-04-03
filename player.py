@@ -44,7 +44,7 @@ class Player:
         ]
         return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
-    def check_cards_post_flop(self) -> bool:
+    def check_cards_post_flop(self) -> int:
         very_good_hands = [
             ("A", "A"),
             ("K", "K"),
@@ -53,7 +53,15 @@ class Player:
             ("10", "10"),
             ("9", "9"),
         ]
-        return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
+
+        flop_cards = self.game_state["community_cards"]
+
+        for flop_card in flop_cards:
+            if flop_card["rank"] == self.first_card["rank"]:
+                return 2  # all-in
+
+        if (self.first_card["rank"], self.second_card["rank"]) in very_good_hands:
+            return 1  # raise agressively
 
     @property
     def other_players_count(self):
@@ -84,6 +92,11 @@ class Player:
               f"Current buy in: {self.game_state['current_buy_in']}",
               f"Player bet: {self.our_player['bet']}",
               )
+        return bet
+
+    @property
+    def all_in(self):
+        bet = self.our_player["stack"]
         return bet
 
     @property
@@ -128,21 +141,28 @@ class Player:
 
         # post flop
         if self.post_flop:
-            if self.check_cards_post_flop():
+            if "Enchanting Cats" in [player.name for player in self.game_state["players"] if player.status == "active"]:
+                print(f"0 Enchanting Cats is in")
+
+            if self.check_cards_post_flop() == 1:
                 print(f"1 RETURN: {self.raise_aggressive_bet}")
                 return self.raise_aggressive_bet
 
-            print(f"2 RETURN: {self.fold_bet}")
+            if self.check_cards_post_flop() == 2:
+                print(f"2 RETURN: {self.all_in}")
+                return self.all_in
+
+            print(f"3 RETURN: {self.fold_bet}")
             return self.fold_bet
 
         # pre flop
         else:
 
             if self.check_cards_pre_flop():
-                print(f"3 RETURN: {self.raise_aggressive_bet}")
+                print(f"4 RETURN: {self.raise_aggressive_bet}")
                 return self.raise_aggressive_bet
 
-            print(f"4 RETURN: {self.fold_bet}")
+            print(f"5 RETURN: {self.fold_bet}")
             return self.fold_bet
 
 
