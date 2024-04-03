@@ -1,3 +1,6 @@
+import requests
+
+
 class Player:
     VERSION = "Chubby Alpha Unicorn"
 
