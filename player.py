@@ -39,6 +39,8 @@ class Player:
             ("K", "K"),
             ("Q", "Q"),
             ("J", "J"),
+            ("10", "10"),
+            ("9", "9"),
         ]
         return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
@@ -48,6 +50,8 @@ class Player:
             ("K", "K"),
             ("Q", "Q"),
             ("J", "J"),
+            ("10", "10"),
+            ("9", "9"),
         ]
         return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
