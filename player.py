@@ -141,9 +141,6 @@ class Player:
 
         # post flop
         if self.post_flop:
-            if "Enchanting Cats" in [player.name for player in self.game_state["players"] if player.status == "active"]:
-                print(f"0 Enchanting Cats is in")
-
             if self.check_cards_post_flop() == 1:
                 print(f"1 RETURN: {self.raise_aggressive_bet}")
                 return self.raise_aggressive_bet
