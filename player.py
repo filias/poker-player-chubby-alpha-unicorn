@@ -1,5 +1,7 @@
+from enum import Enum
 
-class BetType(StrEnum):
+
+class BetType(Enum):
     FOLD = "fold"
     CALL = "call"
     RAISE = "raise"
