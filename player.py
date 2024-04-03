@@ -3,8 +3,12 @@ class Player:
     VERSION = "Chubby Alpha Unicorn"
 
     @property
+    def our_player(self):
+        return self.game_state["players"][self.game_state["in_action"]]
+
+    @property
     def our_cards(self):
-        return self.game_state["players"][self.game_state["in_action"]]["hole_cards"]
+        return self.our_player["hole_cards"]
 
     @property
     def first_card(self):
@@ -37,7 +41,7 @@ class Player:
 
     @property
     def call_bet(self):
-        return self.game_state["current_buy_in"] - self.game_state["players"][self.game_state["in_action"]]["bet"]
+        return self.game_state["current_buy_in"] - self.our_player["bet"]
 
     @property
     def raise_bet(self):
