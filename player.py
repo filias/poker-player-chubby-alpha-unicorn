@@ -1,4 +1,10 @@
 
+class BetType(StrEnum):
+    FOLD = "fold"
+    CALL = "call"
+    RAISE = "raise"
+
+
 class Player:
     VERSION = "Chubby Alpha Unicorn"
 
@@ -22,20 +28,49 @@ class Player:
     def second_card(self):
         return self.our_cards[1]
 
-    def check_cards(self) -> bool:
-        # Check if we have a pair
-        if self.our_cards[0]["rank"] == self.our_cards[1]["rank"]:
-            return True
+    def are_after_the_other(self, first, second) -> bool:
+        to_int = {"A": 14, "K": 13, "Q": 12, "J": 11, "10": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2}
 
-        # Check if we have a high card
-        if self.first_card["rank"] in ["A", "K", "Q", "J", "10"] and self.second_card["rank"] in ["A", "K", "Q", "J", "10"]:
-            return True
+        rank_1 = to_int[first]
+        rank_2 = to_int[second]
 
-        # Check if the cards are the same suit
-        if self.first_card["suit"] == self.second_card["suit"]:
-            return True
+        return abs(rank_1 - rank_2) == 1
 
-        return False
+    def check_cards(self) -> BetType:
+        # Very good hands
+        good_hands = [
+            ("A", "A"),
+            ("K", "K"),
+            ("Q", "Q"),
+            ("J", "J"),
+            ("10", "10"),
+            ("9", "9"),
+        ]
+        if (self.first_card["rank"], self.second_card["rank"]) in good_hands:
+            return BetType.RAISE
+
+        suited_good_hands = [("A", "K"), ("K", "A"), ("A", "Q"), ("Q", "A"), ("K", "Q"), ("Q", "K")]
+        if (self.first_card["rank"], self.second_card["rank"]) in suited_good_hands and self.first_card["suit"] == self.second_card["suit"]:
+            return BetType.RAISE
+
+        # Poor hands
+        # Check if we have a low pair
+        poor_hands = [
+            ("2", "2"),
+            ("3", "3"),
+            ("4", "4"),
+        ]
+        if (self.first_card["rank"], self.second_card["rank"]) in poor_hands:
+            return BetType.FOLD
+
+        # Check if the cards are not of the same suit
+        if (self.first_card["suit"] != self.second_card["suit"]
+            and not self.are_after_the_other(self.first_card["rank"], self.second_card["rank"])
+            and not self.first_card["rank"] == self.second_card["rank"]):
+            return BetType.FOLD
+
+        # Middle hands
+        return BetType.CALL
 
     @property
     def other_players_count(self):
@@ -67,11 +102,13 @@ class Player:
         # If there are other playing in the game we call
         if self.other_players_count > 0:
             # If the cards are good we raise
-            if self.check_cards():
+            action = self.check_cards()
+            if action == BetType.RAISE:
                 return self.raise_bet
-
-            # Otherwise we fold. We dont have good cards
-            return self.fold_bet
+            if action == BetType.FOLD:
+                return self.fold_bet
+            if action == BetType.CALL:
+                return self.call_bet
 
         # Otherwise we call as there are no other players
         return self.call_bet
