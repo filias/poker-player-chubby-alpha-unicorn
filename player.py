@@ -1,4 +1,5 @@
-import requests
+import json
+import subprocess
 
 
 class Player:
@@ -41,15 +42,6 @@ class Player:
         ]
         return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
-    def check_cards_post_flop(self) -> bool:
-        very_good_hands = [
-            ("A", "A"),
-            ("K", "K"),
-            ("Q", "Q"),
-            ("J", "J"),
-        ]
-        return (self.first_card["rank"], self.second_card["rank"]) in very_good_hands
-        
     @property
     def other_players_count(self):
         return len([
@@ -89,26 +81,34 @@ class Player:
     def post_flop(self):
         return self.game_state["community_cards"]
 
+    def call_rainman(self) -> int:
+        api_url = "https://rainman.leanpoker.org/rank"
+
+        # Make the cards list
+        all_cards = [{"rank": self.first_card["rank"], "suit": self.first_card["suit"]},
+                    {"rank": self.second_card["rank"], "suit": self.second_card["suit"]},
+                ] + self.game_state["community_cards"]
+        cards = f'cards={all_cards}'
+
+        # Define the command to execute using curl
+        command = ['curl', '-d', cards, api_url]
+
+        # Execute the curl command and capture the output
+        result = subprocess.run(command, capture_output=True, text=True)
+
+        return json.loads(result.stdout)["rank"]
+
     def betRequest(self, game_state):
         # self.game_state should be immutable - don't change it
         self.game_state = game_state
 
         # post flop
         if self.post_flop:
-            # api_url = "https://rainman.leanpoker.org/rank"
-            #
-            # cards = [
-            #             {"rank": self.first_card["rank"], "suit": self.first_card["suit"]},
-            #             {"rank": self.second_card["rank"], "suit": self.second_card["suit"]},
-            #         ] + self.game_state["community_cards"]
-            #
-            # response = requests.get(api_url, json={"cards": cards})
-            #
-            # if response.json()["rank"] >= 1:
-            #     return self.raise_aggressive_bet
-            print("***** community cards: ", self.game_state["community_cards"])
+            result = self.call_rainman()
 
-            if self.check_cards_post_flop():
+            print("*********Rainman result:", result)
+
+            if result >= 1:
                 return self.raise_aggressive_bet
 
             return self.fold_bet
