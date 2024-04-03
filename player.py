@@ -1,13 +1,3 @@
-from enum import Enum
-
-
-class BetType(Enum):
-    FOLD = "fold"
-    CALL = "call"
-    RAISE = "raise"
-    RAISE_AGGRESSIVE = "raise_aggressive"
-
-
 class Player:
     VERSION = "Chubby Alpha Unicorn"
 
@@ -39,43 +29,14 @@ class Player:
 
         return abs(rank_1 - rank_2) == 1
 
-    def check_cards(self) -> BetType:
-        # Very good hands
+    def check_cards(self) -> bool:
         very_good_hands = [
             ("A", "A"),
             ("K", "K"),
             ("Q", "Q"),
             ("J", "J"),
         ]
-        if (self.first_card["rank"], self.second_card["rank"]) in good_hands:
-            return BetType.RAISE_AGGRESSIVE
-
-        good_hands = [("10", "10"), ("9", "9")]
-        if (self.first_card["rank"], self.second_card["rank"]) in good_hands:
-            return BetType.FOLD
-
-        suited_good_hands = [("A", "K"), ("K", "A"), ("A", "Q"), ("Q", "A"), ("K", "Q"), ("Q", "K")]
-        if (self.first_card["rank"], self.second_card["rank"]) in suited_good_hands and self.first_card["suit"] == self.second_card["suit"]:
-            return BetType.FOLD
-
-        # Poor hands
-        # Check if we have a low pair
-        poor_hands = [
-            ("2", "2"),
-            ("3", "3"),
-            ("4", "4"),
-        ]
-        if (self.first_card["rank"], self.second_card["rank"]) in poor_hands:
-            return BetType.FOLD
-
-        # Check if the cards are not of the same suit and not after the other
-        if (self.first_card["suit"] != self.second_card["suit"]
-            and not self.are_after_the_other(self.first_card["rank"], self.second_card["rank"])
-            and not self.first_card["rank"] == self.second_card["rank"]):
-            return BetType.FOLD
-
-        # Middle hands
-        return BetType.CALL
+        return self.first_card["rank"], self.second_card["rank"]) in very_good_hands
 
     @property
     def other_players_count(self):
@@ -110,16 +71,9 @@ class Player:
 
         # If there are other playing in the game we call
         if self.other_players_count > 0:
-            # If the cards are good we raise
-            action = self.check_cards()
-            if action == BetType.RAISE_AGGRESSIVE:
+            if self.check_cards():
                 return self.raise_aggressive_bet
-            if action == BetType.RAISE:
-                return self.raise_bet
-            if action == BetType.FOLD:
-                return self.fold_bet
-            if action == BetType.CALL:
-                return self.call_bet
+            return self.fold_bet
 
         # Otherwise we call as there are no other players
         return self.call_bet
