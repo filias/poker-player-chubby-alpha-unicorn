@@ -57,7 +57,7 @@ class Player:
             return self.call_bet
 
         # If the cards are good we raise
-        if check_cards():
+        if self.check_cards():
             return self.raise_bet
 
         # Otherwise we call
