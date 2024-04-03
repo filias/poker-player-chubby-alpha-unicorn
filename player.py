@@ -65,7 +65,7 @@ class Player:
         if (self.first_card["rank"], self.second_card["rank"]) in poor_hands:
             return BetType.FOLD
 
-        # Check if the cards are not of the same suit
+        # Check if the cards are not of the same suit and not after the other
         if (self.first_card["suit"] != self.second_card["suit"]
             and not self.are_after_the_other(self.first_card["rank"], self.second_card["rank"])
             and not self.first_card["rank"] == self.second_card["rank"]):
@@ -91,7 +91,7 @@ class Player:
 
     @property
     def raise_bet(self):
-        return self.call_bet + 1
+        return self.call_bet + self.game_state["minimum_raise"]
 
     @property
     def fold_bet(self):
