@@ -72,7 +72,15 @@ class Player:
 
     @property
     def raise_aggressive_bet(self):
-        return self.call_bet + max(self.game_state["pot"], self.game_state["minimum_raise"])
+        bet = self.call_bet + max(self.game_state["pot"], self.game_state["minimum_raise"])
+        print(f"Aggressive bet: {bet}",
+              f"Call bet: {self.call_bet}",
+              f"Pot: {self.game_state['pot']}",
+              f"Minimum raise: {self.game_state['minimum_raise']}",
+              f"Current buy in: {self.game_state['current_buy_in']}",
+              f"Player bet: {self.our_player['bet']}",
+              )
+        return bet
 
     @property
     def fold_bet(self):
@@ -114,16 +122,20 @@ class Player:
         # post flop
         if self.post_flop:
             if self.check_cards_post_flop():
+                print(f"1 RETURN: {self.raise_aggressive_bet}")
                 return self.raise_aggressive_bet
 
+            print(f"2 RETURN: {self.fold_bet}")
             return self.fold_bet
 
         # pre flop
         else:
 
             if self.check_cards_pre_flop():
+                print(f"3 RETURN: {self.raise_aggressive_bet}")
                 return self.raise_aggressive_bet
 
+            print(f"4 RETURN: {self.fold_bet}")
             return self.fold_bet
 
 
