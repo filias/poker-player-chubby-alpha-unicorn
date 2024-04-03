@@ -16,7 +16,7 @@ class Player:
 
         #bet()
 
-        return 1
+        return game_state["current_buy_in"] + 1
 
     def showdown(self, game_state):
         pass
