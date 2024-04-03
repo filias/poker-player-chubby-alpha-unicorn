@@ -57,11 +57,11 @@ class Player:
         flop_cards = self.game_state["community_cards"]
 
         for flop_card in flop_cards:
-            if flop_card["rank"] == self.first_card["rank"]:
-                return 2  # all-in
+            if flop_card["rank"] == self.first_card["rank"] and flop_card["rank"] == self.second_card["rank"]:  # Three of a kind
+                return 2  # double the pot
 
         if (self.first_card["rank"], self.second_card["rank"]) in very_good_hands:
-            return 1  # raise agressively
+            return 1  # raise aggressively
 
     @property
     def other_players_count(self):
