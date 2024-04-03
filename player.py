@@ -37,7 +37,7 @@ class Player:
 
     @property
     def call_bet(self):
-        return self.game_state["current_buy_in"] - self.game_state["players"]["in_action"]["bet"]
+        return self.game_state["current_buy_in"] - self.game_state["players"][self.game_state["in_action"]]["bet"]
 
     @property
     def raise_bet(self):
