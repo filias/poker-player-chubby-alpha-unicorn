@@ -95,8 +95,8 @@ class Player:
         return bet
 
     @property
-    def all_in(self):
-        bet = self.our_player["stack"]
+    def double_the_pot(self):
+        bet = self.raise_aggressive_bet * 2
         return bet
 
     @property
@@ -146,8 +146,8 @@ class Player:
                 return self.raise_aggressive_bet
 
             if self.check_cards_post_flop() == 2:
-                print(f"2 RETURN: {self.all_in}")
-                return self.all_in
+                print(f"2 RETURN: {self.double_the_pot}")
+                return self.double_the_pot
 
             print(f"3 RETURN: {self.fold_bet}")
             return self.fold_bet
