@@ -5,6 +5,7 @@ class BetType(Enum):
     FOLD = "fold"
     CALL = "call"
     RAISE = "raise"
+    RAISE_AGGRESSIVE = "raise_aggressive"
 
 
 class Player:
@@ -40,20 +41,22 @@ class Player:
 
     def check_cards(self) -> BetType:
         # Very good hands
-        good_hands = [
+        very_good_hands = [
             ("A", "A"),
             ("K", "K"),
             ("Q", "Q"),
             ("J", "J"),
-            ("10", "10"),
-            ("9", "9"),
         ]
         if (self.first_card["rank"], self.second_card["rank"]) in good_hands:
-            return BetType.RAISE
+            return BetType.RAISE_AGGRESSIVE
+
+        good_hands = [("10", "10"), ("9", "9")]
+        if (self.first_card["rank"], self.second_card["rank"]) in good_hands:
+            return BetType.FOLD
 
         suited_good_hands = [("A", "K"), ("K", "A"), ("A", "Q"), ("Q", "A"), ("K", "Q"), ("Q", "K")]
         if (self.first_card["rank"], self.second_card["rank"]) in suited_good_hands and self.first_card["suit"] == self.second_card["suit"]:
-            return BetType.RAISE
+            return BetType.FOLD
 
         # Poor hands
         # Check if we have a low pair
@@ -94,6 +97,10 @@ class Player:
         return self.call_bet + self.game_state["minimum_raise"]
 
     @property
+    def raise_aggressive_bet(self):
+        return self.call_bet + max(self.game_state["pot"], self.game_state["minimum_raise"])
+
+    @property
     def fold_bet(self):
         return 0
     
@@ -105,6 +112,8 @@ class Player:
         if self.other_players_count > 0:
             # If the cards are good we raise
             action = self.check_cards()
+            if action == BetType.RAISE_AGGRESSIVE:
+                return self.raise_aggressive_bet
             if action == BetType.RAISE:
                 return self.raise_bet
             if action == BetType.FOLD:
